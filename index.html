@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video URL Publisher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #status {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Publish Video URL</h1>
+    <input type="text" id="urlInput" placeholder="Enter video URL" />
+    <button id="publishButton">Publish URL</button>
+    <button id="clearButton">Clear</button>
+
+    <div id="status"></div>
+
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script>
+        const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+
+        const urlInput = document.getElementById('urlInput');
+        const publishButton = document.getElementById('publishButton');
+        const clearButton = document.getElementById('clearButton');
+        const statusDisplay = document.getElementById('status');
+
+        publishButton.onclick = () => {
+            const videoUrl = urlInput.value;
+            if (videoUrl) {
+                client.publish('video/link', videoUrl);
+                statusDisplay.innerText += `Published: ${videoUrl}\n`;
+            } else {
+                statusDisplay.innerText += "Please enter a valid URL.\n";
+            }
+        };
+
+        clearButton.onclick = () => {
+            urlInput.value = '';
+            statusDisplay.innerText = '';
+        };
+    </script>
+
+</body>
+</html>
+
