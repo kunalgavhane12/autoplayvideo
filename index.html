@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video URL Publisher</title>
+    <title>Video URL Publisher with Interactive Map</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        #map {
+            width: 100%;
+            height: 450px;
+            margin-top: 20px;
         }
         #status {
             margin-top: 20px;
@@ -19,17 +27,81 @@
         }
     </style>
 </head>
-<body>
+<body onload="initMap()">
 
-    <h1>Publish Video URL</h1>
-    <input type="text" id="urlInput" placeholder="Enter video URL" />
-    <button id="publishButton">Publish URL</button>
-    <button id="clearButton">Clear</button>
+    <div class="container">
+        <div id="map"></div>
+        <h1>Publish Video URL</h1>
+        <input type="text" id="urlInput" placeholder="Enter video URL" />
+        <button id="publishButton">Publish URL</button>
+        <button id="clearButton">Clear</button>
 
-    <div id="status"></div>
+        <div id="status"></div>
+    </div>
 
+    <!-- Include Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_49SMPiGOvNq35hXY-JrIEZZzQRw3vE0&callback=initMap" async defer onerror="handleMapError()"></script>
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
     <script>
+        let map;
+        let marker;
+        let currentIndex = 0;
+        const coordinates = [
+            { lat: 17.4045, lng: 78.4642 },
+            { lat: 17.4055, lng: 78.4637 },
+            { lat: 17.4060, lng: 78.4620 },
+            { lat: 17.4065, lng: 78.4606 },
+            { lat: 17.4075, lng: 78.4605 },
+            { lat: 17.4091, lng: 78.4606 },
+            { lat: 17.4095, lng: 78.4607 },
+            { lat: 17.4101, lng: 78.4608 },
+            { lat: 17.4104, lng: 78.4609 },
+            { lat: 17.4110, lng: 78.4606 },
+            { lat: 17.4127, lng: 78.4605 },
+            { lat: 17.4130, lng: 78.4596 },
+            { lat: 17.4138, lng: 78.4584 },
+            { lat: 17.4148, lng: 78.4590 },
+            { lat: 17.4156, lng: 78.4579 }
+        ];
+
+        // Initialize the map
+        function initMap() {
+            const mapOptions = {
+                center: coordinates[0],
+                zoom: 14
+            };
+
+            // Create a new map
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+            // Create a marker at the first coordinate
+            marker = new google.maps.Marker({
+                map: map,
+                position: mapOptions.center,
+                title: "Moving Marker"
+            });
+
+            // Update marker position every 3 seconds
+            setInterval(() => {
+                if (currentIndex < coordinates.length) {
+                    const newPosition = coordinates[currentIndex];
+                    const latLng = new google.maps.LatLng(newPosition.lat, newPosition.lng);
+                    marker.setPosition(latLng);
+                    map.setCenter(latLng); // Center the map on the new position
+                    currentIndex++;
+                } else {
+                    currentIndex = 0; // Reset the index to loop through coordinates
+                }
+            }, 3000); // Update every 3 seconds
+        }
+
+        // Handle map load errors
+        function handleMapError() {
+            alert('Google Maps failed to load. Please check your API key and network.');
+        }
+
+        // MQTT client setup
         const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
 
         const urlInput = document.getElementById('urlInput');
@@ -37,6 +109,7 @@
         const clearButton = document.getElementById('clearButton');
         const statusDisplay = document.getElementById('status');
 
+        // Publish video URL to MQTT
         publishButton.onclick = () => {
             const videoUrl = urlInput.value;
             if (videoUrl) {
@@ -47,6 +120,7 @@
             }
         };
 
+        // Clear the URL input and status
         clearButton.onclick = () => {
             urlInput.value = '';
             statusDisplay.innerText = '';
