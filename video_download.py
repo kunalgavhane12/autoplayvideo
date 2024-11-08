@@ -5,7 +5,7 @@ import os
 MQTT_BROKER = "broker.emqx.io"
 MQTT_PORT = 1883
 MQTT_TOPIC = "video/link"
-DOWNLOAD_PATH = "/home/dt-rpi-iml-9002/video"
+DOWNLOAD_PATH = "/home/dt-rpi-iml-9001/video"
 
 os.makedirs(DOWNLOAD_PATH, exist_ok=True)
 
@@ -22,17 +22,14 @@ def get_unique_filename(base_name):
 
 def download_video(video_url):
     try:
-        # Get the file extension from the URL
         _, ext = os.path.splitext(video_url)
-        
-        # Generate a unique filename starting from 1
         unique_filename = get_unique_filename(ext)
         
-        # Send a GET request to the video URL
+        print(f"Starting download: {video_url}")
+        
         response = requests.get(video_url, stream=True)
         response.raise_for_status()
-
-        # Write the video content to a file
+        
         with open(unique_filename, 'wb') as video_file:
             for chunk in response.iter_content(chunk_size=8192):
                 video_file.write(chunk)
@@ -41,20 +38,20 @@ def download_video(video_url):
     except requests.exceptions.RequestException as e:
         print(f"Error downloading video: {e}")
 
+def on_connect(client, userdata, flags, rc):
+    print(f"Connected to broker with result code {rc}")
+    client.subscribe(MQTT_TOPIC)
+
 def on_message(client, userdata, message):
     video_url = message.payload.decode('utf-8')
     print(f"Received video URL: {video_url}")
     download_video(video_url)
 
 client = mqtt.Client()
+client.on_connect = on_connect
 client.on_message = on_message
 
-# Connect to the MQTT broker
 client.connect(MQTT_BROKER, MQTT_PORT, 60)
 
-# Subscribe to the topic
-client.subscribe(MQTT_TOPIC)
-
-# Start the MQTT loop
 client.loop_forever()
 
