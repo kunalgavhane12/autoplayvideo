@@ -1,3 +1,4 @@
 #!/bin/bash
-source /home/kunal/autoplayvideo/venv/bin/activate
-python3 /home/kunal/autoplayvideo/video_download.py
+source /home/dt-rpi-iml-9002/autoplayvideo/venv/bin/activate
+/usr/bin/python3 /home/dt-rpi-iml-9002/autoplayvideo/video_download.py
+

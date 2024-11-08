@@ -48,21 +48,13 @@
         let marker;
         let currentIndex = 0;
         const coordinates = [
-            { lat: 17.4045, lng: 78.4642 },
-            { lat: 17.4055, lng: 78.4637 },
-            { lat: 17.4060, lng: 78.4620 },
-            { lat: 17.4065, lng: 78.4606 },
-            { lat: 17.4075, lng: 78.4605 },
-            { lat: 17.4091, lng: 78.4606 },
-            { lat: 17.4095, lng: 78.4607 },
-            { lat: 17.4101, lng: 78.4608 },
-            { lat: 17.4104, lng: 78.4609 },
-            { lat: 17.4110, lng: 78.4606 },
-            { lat: 17.4127, lng: 78.4605 },
-            { lat: 17.4130, lng: 78.4596 },
-            { lat: 17.4138, lng: 78.4584 },
-            { lat: 17.4148, lng: 78.4590 },
-            { lat: 17.4156, lng: 78.4579 }
+    { "lat": 17.4038, "lng": 78.4649 },
+    { "lat": 17.4115, "lng": 78.4607 },
+    { "lat": 17.4204, "lng": 78.4559 },
+    { "lat": 17.4285, "lng": 78.4512 },
+    { "lat": 17.4356, "lng": 78.4445 },
+    { "lat": 17.4415, "lng": 78.4415 },
+    { "lat": 17.4476, "lng": 78.4382 }
         ];
 
         // Initialize the map
@@ -93,7 +85,7 @@
                 } else {
                     currentIndex = 0; // Reset the index to loop through coordinates
                 }
-            }, 3000); // Update every 3 seconds
+            }, 10000); // Update every 10 seconds
         }
 
         // Handle map load errors
