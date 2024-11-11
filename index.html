@@ -35,7 +35,6 @@
         <input type="text" id="urlInput" placeholder="Enter video URL" />
         <button id="publishButton">Publish URL</button>
         <button id="clearButton">Clear</button>
-
         <div id="status"></div>
     </div>
 
@@ -74,7 +73,7 @@
                 title: "Moving Marker"
             });
 
-            // Update marker position every 3 seconds
+            // Update marker position every 10 seconds
             setInterval(() => {
                 if (currentIndex < coordinates.length) {
                     const newPosition = coordinates[currentIndex];

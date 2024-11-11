@@ -5,7 +5,7 @@ import os
 MQTT_BROKER = "broker.emqx.io"
 MQTT_PORT = 1883
 MQTT_TOPIC = "video/link"
-DOWNLOAD_PATH = "/home/dt-rpi-iml-9001/video"
+DOWNLOAD_PATH = "/home/kunal/video"
 
 os.makedirs(DOWNLOAD_PATH, exist_ok=True)
 

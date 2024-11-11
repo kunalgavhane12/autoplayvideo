@@ -1,7 +1,7 @@
 #!/bin/bash
 
-AD_DIR="/home/dt-rpi-iml-9002/Videos/*"
-VIDEO_DIR="/home/dt-rpi-iml-9002/video/*"
+AD_DIR="/home/kunal/Videos/*"
+VIDEO_DIR="/home/kunal/video/*"
 
 while true; do
     if [ -z "$(ls -A $VIDEO_DIR 2>/dev/null)" ]; then
