@@ -4,12 +4,7 @@ AD_DIR="/home/kunal/Ad/"
 VIDEO_DIR="/home/kunal/Videos"
 IMAGE_DIR="/home/kunal/images/"
 
-IMAGE_DURATION=3  # Duration for each image in seconds
-
-# Function to close any previous mpv processes to avoid multiple instances
-function close_previous_players() {
-    pkill -f mpv
-}
+IMAGE_DURATION=5  # Duration for each image in seconds
 
 # Initialize indexes for videos and images
 video_index=0
@@ -31,32 +26,53 @@ if [ -z "$(ls -A $VIDEO_DIR 2>/dev/null)" ] && [ -n "$(ls -A $AD_DIR 2>/dev/null
     videos=("$AD_DIR"/*.*)
 fi
 
-# Main loop to alternate between video and image
 while true; do
-    # Play one video and increment video index
+    # Check if the video file exists before proceeding
     if [[ -f "${videos[$video_index]}" ]]; then
         video="${videos[$video_index]}"
         echo "Playing video: $video"
-#        close_previous_players
+
+        # Start playing the video
         mpv --really-quiet "$video" &
-        wait $!  # Wait for the video to finish
+        video_pid=$!
+
+        # Track the time elapsed during the video playback
+        play_duration=0
+        while kill -0 $video_pid 2>/dev/null; do
+            sleep 1
+            ((play_duration++))
+
+            # After every 10 seconds of playback, pause for 5 seconds
+            if ((play_duration % 10 == 0)); then
+                pkill -SIGSTOP mpv
+                echo "Paused video for 5 seconds"
+
+                # Display one image during the pause
+                if [[ -f "${images[$image_index]}" ]]; then
+                    image="${images[$image_index]}"
+                    echo "Displaying image: $image"
+                    feh "$image" &
+                    sleep $IMAGE_DURATION
+                    pkill -f feh  # Close the image after the duration
+
+                    # Move to the next image, looping back if at the end
+                    image_index=$(( (image_index + 1) % ${#images[@]} ))
+                else
+                    echo "No images available."
+                fi
+
+                pkill -SIGCONT mpv
+                echo "Resumed video"
+            fi
+        done
+
+        # Wait for the video to finish
+        wait $video_pid
 
         # Move to the next video, looping back if at the end
         video_index=$(( (video_index + 1) % ${#videos[@]} ))
     else
         echo "No videos available."
-    fi
-
-    # Display one image and increment image index
-    if [[ -f "${images[$image_index]}" ]]; then
-        image="${images[$image_index]}"
-        echo "Displaying image: $image"
-        mpv --image-display-duration=$IMAGE_DURATION "$image" --no-audio &
-        wait $!  # Wait for the image display to complete
-
-        # Move to the next image, looping back if at the end
-        image_index=$(( (image_index + 1) % ${#images[@]} ))
-    else
-        echo "No images available."
+        break  # Exit loop if no videos are found
     fi
 done
