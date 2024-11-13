@@ -27,7 +27,7 @@
         }
     </style>
 </head>
-<body onload="initMap()">
+<body>
 
     <div class="container">
         <div id="map"></div>
@@ -46,18 +46,30 @@
         let map;
         let marker;
         let currentIndex = 0;
-        const coordinates = [
-    { "lat": 17.4038, "lng": 78.4649 },
-    { "lat": 17.4115, "lng": 78.4607 },
-    { "lat": 17.4204, "lng": 78.4559 },
-    { "lat": 17.4285, "lng": 78.4512 },
-    { "lat": 17.4356, "lng": 78.4445 },
-    { "lat": 17.4415, "lng": 78.4415 },
-    { "lat": 17.4476, "lng": 78.4382 }
-        ];
+        let coordinates = [];
+
+        // Fetch the coordinates from the JSON file
+        fetch('coordinates.json')
+            .then(response => response.json())
+            .then(data => {
+                coordinates = data.coordinates;
+                if (coordinates.length > 0) {
+                    initMap();  // Call initMap only if coordinates are available
+                } else {
+                    alert("No coordinates available in the JSON file.");
+                }
+            })
+            .catch(error => {
+                console.error("Error loading coordinates:", error);
+                alert("Failed to load coordinates.");
+            });
 
         // Initialize the map
         function initMap() {
+            if (coordinates.length === 0) {
+                return;
+            }
+
             const mapOptions = {
                 center: coordinates[0],
                 zoom: 14
