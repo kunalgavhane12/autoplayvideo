@@ -44,7 +44,7 @@ cd to your directory with your HTML files
  
 bash
 Copy code
-./start_server.sh
+./server.sh
 You should now have a Python HTTP server running on port 8000 and be able to reach your files in the directory.
  
 Viewing the HTML Page 
