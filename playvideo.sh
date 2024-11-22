@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AD_DIR="/home/kunal/Ad/*"
+AD_DIR="/home/kunal/images/*"
 VIDEO_DIR="/home/kunal/video/*"
 
 while true; do

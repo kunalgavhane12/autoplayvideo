@@ -1,8 +1,8 @@
 #!/bin/bash
 
-AD_DIR="/home/kunal/Ad/"
+AD_DIR="/home/kunal/Ad"
 VIDEO_DIR="/home/kunal/Videos"
-IMAGE_DIR="/home/kunal/images/"
+IMAGE_DIR="/home/kunal/images"
 
 IMAGE_DURATION=5  # Duration for each image in seconds
 
@@ -47,20 +47,21 @@ while true; do
                 pkill -SIGSTOP mpv
                 echo "Paused video for 5 seconds"
 
-                # Display one image during the pause
-                if [[ -f "${images[$image_index]}" ]]; then
-                    image="${images[$image_index]}"
-                    echo "Displaying image: $image"
-                    feh "$image" &
-                    sleep $IMAGE_DURATION
-                    pkill -f feh  # Close the image after the duration
+		# Display two images, each for 2 seconds
+                for i in {0..1}; do
+                    if [[ -f "${images[$image_index]}" ]]; then
+                        image="${images[$image_index]}"
+                        echo "Displaying image: $image"
+                        feh "$image" &
+                        sleep $IMAGE_DURATION
+                        pkill -f feh  # Close the image after the duration
 
-                    # Move to the next image, looping back if at the end
-                    image_index=$(( (image_index + 1) % ${#images[@]} ))
-                else
-                    echo "No images available."
-                fi
-
+                        # Move to the next image, looping back if at the end
+                        image_index=$(( (image_index + 1) % ${#images[@]} ))
+                    else
+                        echo "No images available."
+                    fi
+                done
                 pkill -SIGCONT mpv
                 echo "Resumed video"
             fi
